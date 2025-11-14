@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# 📦 Carlinho Express - Sistema de Logística e Pedidos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto adota uma arquitetura de microsserviços madura, aplicando padrões avançados como Clean Architecture e Vertical Slice, garantindo escalabilidade, resiliência e alta manutenibilidade.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 👥 Alunos Participantes
 
-## React Compiler
+Este projeto foi desenvolvido por:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Vincius Avellar**
+* **Gustavo Noleto**
+* **João Barletta**
+* **Breno Souza**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🗺️ Arquitetura do Código-Fonte: Padrões e Componentes
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 1. Padrões Arquiteturais Centrais
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+O projeto utiliza os seguintes padrões para garantir a qualidade do código e a estrutura do sistema:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Padrão | Descrição |
+| :--- | :--- |
+| **Microsserviços** | Divisão do sistema em componentes independentes para escalabilidade e implantação autônoma. |
+| **Clean Architecture** | Aplicado no microsserviço **`carlinho-service`**. Garante que a lógica de negócio seja isolada e independente de frameworks ou bancos de dados. |
+| **Vertical Slice** | Aplicado em **todos** os microsserviços. O desenvolvimento é organizado em "fatias" verticais que cobrem uma funcionalidade completa (do Controller ao Banco de Dados). |
+| **Backend For Frontend (BFF)** | Camada intermediária que serve APIs customizadas para interfaces específicas. |
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 2. Frontend e Comunicação
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Componente | Tecnologia | Finalidade |
+| :--- | :--- | :--- |
+| **Frontend** | **React** | Interface de Usuário principal (Web/Mobile Híbrido), responsável pela apresentação e interação do usuário. |
+| **API Gateway** | N/A | Ponto de entrada unificado para **todas** as requisições dos clientes (React). |
+| **bff-caronas** | NestJS | **API customizada para o Frontend Caronas.** Otimiza a comunicação entre o React e o `carlinho-service`. |
+
+### 3. Microsserviços e Persistência Poliglota
+
+O backend usa o **NestJS** como framework principal, mas a arquitetura e as tecnologias de persistência variam por serviço:
+
+| Microsserviço | Padrões Internos | Persistência (Banco de Dados) |
+| :--- | :--- | :--- |
+| **carlinho-service** | **Clean Architecture** e Vertical Slice | **Azure SQL Database** (Relacional) |
+| **usuario-microservice** | Vertical Slice (Padrão mais simples) | **MongoDB** (NoSQL / Documentos) |
+
+**Fluxo de Comunicação:** O Frontend em **React** faz requisições ao **API Gateway**, que roteia para os microsserviços apropriados ou para o **bff-caronas** (que, por sua vez, se comunica com o `carlinho-service`).
